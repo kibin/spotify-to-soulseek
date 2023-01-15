@@ -10,7 +10,8 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const SLSK_USER = process.env.SLSK_USER;
 const SLSK_PASS = process.env.SLSK_PASS;
-const REDIRECT_URI = 'http://localhost:3000/auth';
+const REDIRECT_URI = process.env.REDIRECT_URI || 'http://localhost:3000/auth';
+const PORT = process.env.PORT || 3000;
 
 let playlistId = process.argv.slice(2)[0];
 
@@ -76,9 +77,13 @@ app.get("/auth", (req, res, next) => {
   res.send("You have been authenticated and can close this tab!");
 })
 
-app.listen(3000, async () => {
-  console.log("listening on port 3000");
-  const authorizeURL = spotifyApi.createAuthorizeURL([], "state");
-  await setupSlsk(SLSK_USER, SLSK_PASS);
-  console.log("Please click this link: ", authorizeURL);
+app.listen(PORT, async () => {
+    // console.log("listening on port: " + PORT);
+
+    const authorizeURL = spotifyApi.createAuthorizeURL([], "state");
+
+    await setupSlsk(SLSK_USER, SLSK_PASS);
+
+    console.log("\nOpen this link to authorize your Spotify:".yellow);
+    console.log(authorizeURL.brightBlue);
 })
