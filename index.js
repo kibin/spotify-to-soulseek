@@ -4,6 +4,7 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const express = require('express');
 const dotenv = require('dotenv').config();
 const {downloadSong, setupSlsk} = require('./downloadSong');
+const { TrackCounter } = require('./util')
 
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -20,24 +21,33 @@ const spotifyApi = new SpotifyWebApi({
   redirectUri: REDIRECT_URI
 });
 
-const downloadSongs = async (songs) => {
-  const asyncArray = songs.map((songName) => () => downloadSong(songName));
-  try {
-   await Promise.all(asyncArray.map(elem => elem()));
-  } catch (error) {
-    console.log("download failed: ", error);
-  }
+const downloadSongs = async (songs, playlistName, counter) => {
+    try {
+        await Promise.all(songs.map(downloadSong(playlistName, counter)));
+    } catch (error) {
+        console.log('download failed: '.red, error);
+    }
 }
 
 const getPlaylistSongs = async () => {
-  const playlist = await spotifyApi.getPlaylistTracks(playlistId);
-  const songs = [];
-  for (track of playlist.body.items) {
-    songs.push(track.track.artists[0].name + " " + track.track.name)
-  }
-  console.log("Playlist found. We will try and download: ");
-  console.log(songs);
-  downloadSongs(songs);
+    const [playlist, tracks] = await Promise.all([
+        spotifyApi.getPlaylist(playlistId),
+        spotifyApi.getPlaylistTracks(playlistId),
+    ])
+    const name = playlist.body.name;
+    const amount = tracks.body.total;
+    // console.log('playlist', playlist.body, '\ntracks', tracks.body)
+    const counter = TrackCounter(amount);
+    const songs = tracks.body.items
+        .map(({track}) => `${track.artists[0].name} ${track.name}`)
+
+    console.log('\n')
+    console.log(`Playlist ${name} found.`.blue)
+    console.log(`We will try and download ${amount} song${amount === 1 ? '' : 's'}:`.blue);
+    console.log(songs.map((name, id) => `${id + 1}. ${name}`).join('\n').white);
+    console.log('\n')
+
+    downloadSongs(songs, name, counter);
 }
 
 const setAccessToken = async (code) => {
