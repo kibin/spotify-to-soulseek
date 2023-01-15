@@ -60,7 +60,7 @@ const getDownloadPath = async (name, folderName) => {
 }
 
 const setupSlsk = async (username, password) => {
-    console.log("setting up Soulseek...");
+    console.log('Connecting to Soulseek...'.blue);
     try {
         client = await connect({
             user: username,
@@ -71,18 +71,20 @@ const setupSlsk = async (username, password) => {
     } catch (err) {
         console.error(err);
     }
-    console.log("Soulseek Setup done.")
+    console.log('Connection established.'.green)
     return Promise.resolve();
 }
 
 const downloadSong = (folderName, trackCounter) => async (songName) => {
     try {
-        console.log("searching for ", songName);
+        console.log(`${songName}: searching...`.brightYellow);
+
         const searchResults = await search.call(client, ({ req: songName, timeout: 5000 }));
-        console.log("search done!");
         const songToDownload = findHighQualityTrack(searchResults, songName);
-        if(songToDownload) {
-            console.log("downloading: ", songName);
+
+        if (songToDownload) {
+            console.log(`downloading: ${songToDownload.file}`.white);
+
             const fileName = songToDownload.file;
             const downloadPath = await getDownloadPath(findSongName(fileName), folderName)
             const params = {
@@ -97,9 +99,11 @@ const downloadSong = (folderName, trackCounter) => async (songName) => {
         } else {
             trackCounter.fail();
         }
+
         return Promise.resolve();
     } catch (err) {
         console.error(err);
+
         return Promise.reject(err);
     }
 }

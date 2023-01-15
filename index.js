@@ -26,9 +26,9 @@ try {
 const app = express();
 
 const spotifyApi = new SpotifyWebApi({
-  clientId: CLIENT_ID,
-  clientSecret: CLIENT_SECRET,
-  redirectUri: REDIRECT_URI
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    redirectUri: REDIRECT_URI
 });
 
 const downloadSongs = async (songs, playlistName, counter) => {
@@ -61,20 +61,22 @@ const getPlaylistSongs = async () => {
 }
 
 const setAccessToken = async (code) => {
-  try {
-    const data = await spotifyApi.authorizationCodeGrant(code);
-    spotifyApi.setAccessToken(data.body['access_token']);
-    spotifyApi.setRefreshToken(data.body['refresh_token']);
-    console.log("Authenticated!");
-    getPlaylistSongs();
-  } catch (err) {
-    console.log("authorization failed: ", err);
-  }
+    try {
+        const data = await spotifyApi.authorizationCodeGrant(code);
+
+        spotifyApi.setAccessToken(data.body['access_token']);
+        spotifyApi.setRefreshToken(data.body['refresh_token']);
+        console.log('Authenticated!'.green);
+
+        getPlaylistSongs();
+    } catch (err) {
+        console.log("authorization failed: ".red, err);
+    }
 }
 
 app.get("/auth", (req, res, next) => {
-  setAccessToken(req.query.code);
-  res.send("You have been authenticated and can close this tab!");
+    setAccessToken(req.query.code);
+    res.send("You have been authenticated and can close this tab!");
 })
 
 app.listen(PORT, async () => {
