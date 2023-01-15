@@ -1,6 +1,6 @@
 # Spotify to Soulseek
 
-A Nodejs script that will allow you to automatically download entire Spotify playlists through Soulseek. At the moment it will only download songs with a minimum bitrate of 320kbps. 
+A Nodejs script that will allow you to automatically download entire spotify playlists through soulseek. Boycotting spotify were never easier (but support the artists please).
 
 ## Setup
 
@@ -10,10 +10,17 @@ In your App settings, add the following redirect url: `http://localhost:3000/aut
 
 Create a new .env file like this:
 ```
+# required
 CLIENT_ID=your_spotify_client_id
 CLIENT_SECRET=your_spotify_client_secret
 SLSK_USER=your_soulseek_username
 SLSK_PASS=your_soulseek_password
+
+# optional
+DOWNLOAD_TO=path_to_folder_to_download_to
+# mp3 320kbps by default
+EXTENSIONS="list,of,file,extensions,comma-separated"
+PORT=your_server_port
 ```
 
 Usage:
@@ -23,13 +30,18 @@ npm install
 node index.js spotify_playlist_url
 ```
 
+Both links and playlist ids work.
 
-**[Quick note as pointed out here](https://github.com/nlspnsgen/spotify-to-soulseek/issues/1#issuecomment-1146498844):**
-You don't want to use the full playlist URL, just the last section of the URL before the parameters. For example, if my playlist's URL is: `https://open.spotify.com/playlist/abcdefghijklmo?si=1234567` then the command I would want to use would be:
-```
-node index.js abcdefghijklmo
-```
+## Roadmap
 
-### Disclaimer
+[ ] bogus file creation in script root folder bug.
+[ ] handling errors from spotify and soulseek clients.
+[ ] huge (3k+ songs) playlists support. for now they kill soulseek servers.
+[ ] DX
+[ ] progress bars, it’s such a mess rn.
+[ ] all the playlists downloading feature, maybe?
+[ ] g. u. i. with links for where to buy digital version of every track maybe?
+
+## Disclaimer
 
 The authors of this project are in no way responsible for any copyright infringements caused by using this code or software using this project. There are many legitimate use-cases for this code outside of piracy. This project was written with the intention to be used for such legal purposes.
