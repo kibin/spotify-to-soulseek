@@ -1,7 +1,10 @@
 
 const { promisify } = require('util');
 const slsk = require('slsk-client');
-const { findSongName, findHighQualityMp3 } = require('./util');
+const {
+    findSongName,
+    findHighQualityTrack,
+} = require('./util');
 const connect = promisify(slsk.connect);
 
 let client;
@@ -29,7 +32,7 @@ const downloadSong = async (songName) => {
         console.log("searching for ", songName);
         const searchResults = await search.call(client, ({ req: songName, timeout: 5000 }));
         console.log("search done!");
-        const songToDownload = findHighQualityMp3(searchResults, songName);
+        const songToDownload = findHighQualityTrack(searchResults, songName);
         if(songToDownload) {
             console.log("downloading: ", songName);
             const fileName = songToDownload.file;

@@ -1,3 +1,11 @@
+const EXTENSIONS =
+    (process.env.EXTENSIONS || ['']).split(',').map(ext => ext.trim())
+const REs = EXTENSIONS.map(ext => new RegExp(`\.${ext}$`, 'i'))
+
+const isHQMP3 = track => /\.mp3$/i.test(track.file) && track.bitrate === 320
+
+const isHighQualityTrack = track => REs.some(re => re.test(track.file)) || isHQMP3(track)
+
 const findSongName = (fileName) => {
     let backSlashIndex = 0;
 
@@ -11,11 +19,20 @@ const findSongName = (fileName) => {
     return fileName.slice(backSlashIndex + 1);
 }
 
-const findHighQualityMp3 = (results, songName) => {
-    for (song of results) {
-        if(song.bitrate === 320) return song;
+const findHighQualityTrack = (results, songName) => {
+    if (!results.length) {
+        console.log('No results for:'.red, songName);
+        return null;
     }
-    console.log("No good bitrate found for: ", songName);
+    // sorting by size, as higher quality tracks tend to size more
+    const sortedBySize = results.sort((s1, s2) => s2.size - s1.size)
+
+    for (track of sortedBySize) {
+        if (isHighQualityTrack(track)) return track;
+    }
+
+    console.log('No quality results for:'.red, songName);
+
     return results[0];
 }
 
@@ -50,6 +67,6 @@ const TrackCounter = (amount) => {
 
 module.exports = {
     findSongName,
-    findHighQualityMp3,
+    findHighQualityTrack,
     TrackCounter,
 };
