@@ -1,3 +1,5 @@
+require('colors');
+
 const SpotifyWebApi = require('spotify-web-api-node');
 const express = require('express');
 const dotenv = require('dotenv').config();
