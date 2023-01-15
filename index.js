@@ -12,7 +12,16 @@ const SLSK_USER = process.env.SLSK_USER;
 const SLSK_PASS = process.env.SLSK_PASS;
 const REDIRECT_URI = 'http://localhost:3000/auth';
 
-const playlistId = process.argv.slice(2)[0];
+let playlistId = process.argv.slice(2)[0];
+
+try {
+    const url = new URL(playlistId)
+
+    playlistId = url.pathname.split('/').pop()
+} catch(e) {
+  // it’s actual id, we can work with it
+}
+
 const app = express();
 
 const spotifyApi = new SpotifyWebApi({
